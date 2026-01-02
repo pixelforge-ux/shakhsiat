@@ -7,37 +7,34 @@
     <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  try {
-    if (window.Eitaa && Eitaa.WebApp) {
-      Eitaa.WebApp.ready();
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.ready();
 
-      // تمام صفحه شدن
-      if (Eitaa.WebApp.expand)
-        Eitaa.WebApp.expand();
+    if (Eitaa.WebApp.expand) Eitaa.WebApp.expand();
+    if (Eitaa.WebApp.setHeaderColor) Eitaa.WebApp.setHeaderColor('#0a61db');
+    if (Eitaa.WebApp.enableClosingConfirmation) Eitaa.WebApp.enableClosingConfirmation();
+    if (Eitaa.WebApp.disableVerticalSwipes) Eitaa.WebApp.disableVerticalSwipes();
 
-      // تغییر رنگ هدر به آبی مایل به سفید (ثابت)
-      if (Eitaa.WebApp.setHeaderColor)
-        Eitaa.WebApp.setHeaderColor('#831dd1');
+    // فعال‌سازی دکمه بک
+    Eitaa.WebApp.BackButton.show();
 
-      // تایید قبل از بستن WebApp
-      if (Eitaa.WebApp.enableClosingConfirmation)
-        Eitaa.WebApp.enableClosingConfirmation();
+    // فقط یک state پایه می‌ذاریم
+    history.replaceState({ root: true }, "", location.href);
 
-      // غیرفعال کردن سوایپ عمودی (اگر پشتیبانی شود)
-      if (Eitaa.WebApp.disableVerticalSwipes)
-        Eitaa.WebApp.disableVerticalSwipes();
+    Eitaa.WebApp.BackButton.onClick(() => {
+      // اگر state قبل‌تر هست → برگرد
+      if (history.state && !history.state.root) {
+        history.back();
+      } else {
+        // واقعاً ریشه‌ای → خروج
+        Eitaa.WebApp.close();
+      }
+    });
 
-      // دکمه بک
-      Eitaa.WebApp.onEvent('backButtonClicked', () => {
-        if (history.length > 1) {
-          history.back();
-        } else {
-          Eitaa.WebApp.close();
-        }
-      });
-    }
-  } catch (e) {
-    console.warn(e);
+    // هر وقت رفتی صفحه داخلی، اینو صدا بزن
+    window.pushInnerState = () => {
+      history.pushState({ inner: true }, "", location.href);
+    };
   }
 });
 </script>
