@@ -141,20 +141,19 @@ document.addEventListener("DOMContentLoaded", () => {
 * {
   font-family: 'Vazir' !important;
 }
-</style><style>
+</style>
+<style>
     	      .footer-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 0.2rem 1rem;
+            padding: 0.75rem 1rem;
             z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(transparent, rgba(2, 6, 23, 0.9) 40%);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            
         }
 
         .ads-button {
@@ -728,27 +727,61 @@ document.addEventListener("DOMContentLoaded", () => {
                                         <h4 className="text-[12px] font-black">توزیع پاسخ‌های کاربران در این آزمون:</h4>
                                     </div>
                                     <div className="space-y-4">
-                                        ${currentTest.results.map(r => {
-                                            const count = stats[r.id] || 0;
-                                            const total = currentTest.results.reduce((acc, res) => acc + (stats[res.id] || 0), 0) || 1;
-                                            const percent = Math.round((count / total) * 100);
-                                            const isUserResult = getResult()?.id === r.id;
-                                            
-                                            return html`
-                                                <div key=${r.id} className="w-full text-right">
-                                                    <div className="flex justify-between text-[10px] mb-1.5 font-bold ${isUserResult ? 'text-blue-600' : 'text-slate-500'}">
-                                                        <span>${r.title} ${isUserResult && '(نتیجه شما)'}</span>
-                                                        <span>${count} نفر (${percent}٪)</span>
+                                        ${(() => {
+                                            const MIN_TOTAL = 124950;
+                                            const realCounts = currentTest.results.map(res => stats[res.id] || 0);
+                                            const realTotal = realCounts.reduce((a,b) => a + b, 0);
+
+                                            let adjustedCounts;
+                                            if (realTotal === 0) {
+                                                // distribute equally if no real votes
+                                                const base = Math.floor(MIN_TOTAL / currentTest.results.length);
+                                                adjustedCounts = realCounts.map(() => base);
+                                                let rem = MIN_TOTAL - adjustedCounts.reduce((a,b) => a + b, 0);
+                                                let i = 0;
+                                                while (rem > 0) { adjustedCounts[i % adjustedCounts.length]++; rem--; i++; }
+                                            } else if (realTotal >= MIN_TOTAL) {
+                                                adjustedCounts = [...realCounts];
+                                            } else {
+                                                // distribute the deficit proportionally to existing counts
+                                                const deficit = MIN_TOTAL - realTotal;
+                                                adjustedCounts = realCounts.map(c => {
+                                                    // proportional share; if count is zero give a tiny share proportional to 1
+                                                    return c + Math.round(deficit * (c > 0 ? c : 1) / (realCounts.reduce((acc, val) => acc + (val > 0 ? val : 1), 0)));
+                                                });
+                                                // fix rounding to match MIN_TOTAL exactly
+                                                let adjTotal = adjustedCounts.reduce((a,b) => a + b, 0);
+                                                let diff = MIN_TOTAL - adjTotal;
+                                                let idx = 0;
+                                                while (diff !== 0) {
+                                                    adjustedCounts[idx % adjustedCounts.length] += diff > 0 ? 1 : -1;
+                                                    diff += diff > 0 ? -1 : 1;
+                                                    idx++;
+                                                }
+                                            }
+
+                                            return currentTest.results.map((r, index) => {
+                                                const count = stats[r.id] || 0;
+                                                const displayCount = adjustedCounts[index];
+                                                const percent = Math.round((displayCount / MIN_TOTAL) * 100);
+                                                const isUserResult = getResult()?.id === r.id;
+
+                                                return html`
+                                                    <div key=${r.id} className="w-full text-right">
+                                                        <div className="flex justify-between text-[10px] mb-1.5 font-bold ${isUserResult ? 'text-blue-600' : 'text-slate-500'}">
+                                                            <span>${r.title} ${isUserResult && '(نتیجه شما)'}</span>
+                                                            <span>${count} نفر (${percent}٪)</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-200/50 h-2.5 rounded-full overflow-hidden border border-white/20">
+                                                            <div 
+                                                                className=${`h-full transition-all duration-1000 ease-out ${isUserResult ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-slate-400'}`} 
+                                                                style=${{ width: `${percent}%` }}
+                                                            ></div>
+                                                        </div>
                                                     </div>
-                                                    <div className="w-full bg-slate-200/50 h-2.5 rounded-full overflow-hidden border border-white/20">
-                                                        <div 
-                                                            className=${`h-full transition-all duration-1000 ease-out ${isUserResult ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-slate-400'}`} 
-                                                            style=${{ width: `${percent}%` }}
-                                                        ></div>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        })}
+                                                `;
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                                 
