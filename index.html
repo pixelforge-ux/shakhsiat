@@ -89,33 +89,28 @@
 <body>
     <div id="root"></div>
 
-    <script>
-            (function(w,d,n){
-                w.yektanetAnalyticsObject=n;
-                w[n]=w[n]||function(){ (w[n].q = w[n].q||[]).push(arguments); };
-                var a=d.getElementsByTagName("head")[0], r=new Date();
-                var c="https://cdn.yektanet.com/superscript/vch18Wkg/native-no-data-44512/yn_pub.js?v="+r.getFullYear().toString()+"0"+r.getMonth()+"0"+r.getDate()+"0"+r.getHours();
-                
-                // Primary insertion: add external script tag (standard approach)
-                try {
-                    var s = d.createElement("script");
-                    s.async = true;
-                    s.src = c;
-                    a.appendChild(s);
-                } catch (e) {}
+    <script src="https://developer.eitaa.com/js/eitaa-web-app.js"></script>
 
-                // Fallback: try fetching and evaluating the script so it works in webviews that block external loads
-                try {
-                    fetch(c, { credentials: 'omit', mode: 'cors' }).then(function(resp){
-                        if(!resp.ok) throw new Error('fetch-failed');
-                        return resp.text();
-                    }).then(function(code){
-                        try { (0, eval)(code); } catch(e) { /* silent */ }
-                    }).catch(function(){ /* silent */ });
-                } catch (e) { /* silent */ }
-            })(window,document,"yektanet");
-    </script>
-    </script>
+<div id="ad-box" style="position:relative">
+  <!-- کد یکتانت اینجا --><script>
+            !function(e,t,n){e.yektanetAnalyticsObject=n,e[n]=e[n]||function(){e[n].q.push(arguments)},e[n].q=e[n].q||[];var a=t.getElementsByTagName("head")[0],r=new Date,c="https://cdn.yektanet.com/superscript/vch18Wkg/native-no-data-44512/yn_pub.js?v="+r.getFullYear().toString()+"0"+r.getMonth()+"0"+r.getDate()+"0"+r.getHours(),s=t.createElement("link");s.rel="preload",s.as="script",s.href=c,a.appendChild(s);var l=t.createElement("script");l.async=!0,l.src=c,a.appendChild(l)}(window,document,"yektanet");
+  </script>
+  <div id="catch-click"
+       style="position:absolute; inset:0; z-index:9999; cursor:pointer;">
+  </div>
+</div>
+
+<script>
+document.getElementById("catch-click").onclick = function () {
+  const url = "https://your-direct-landing.com";
+
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.openLink(url, { try_browser: false });
+  } else {
+    window.location.href = url;
+  }
+};
+</script>
     
         
     <script type="module">
