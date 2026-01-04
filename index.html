@@ -115,30 +115,6 @@
 </head>
 <body>
     <div id="root"></div>
-
-    <script src="https://developer.eitaa.com/js/eitaa-web-app.js"></script>
-
-<div id="ad-box" style="position:relative">
-  <!-- کد یکتانت اینجا --><script>
-            !function(e,t,n){e.yektanetAnalyticsObject=n,e[n]=e[n]||function(){e[n].q.push(arguments)},e[n].q=e[n].q||[];var a=t.getElementsByTagName("head")[0],r=new Date,c="https://cdn.yektanet.com/superscript/vch18Wkg/native-no-data-44512/yn_pub.js?v="+r.getFullYear().toString()+"0"+r.getMonth()+"0"+r.getDate()+"0"+r.getHours(),s=t.createElement("link");s.rel="preload",s.as="script",s.href=c,a.appendChild(s);var l=t.createElement("script");l.async=!0,l.src=c,a.appendChild(l)}(window,document,"yektanet");
-  </script>
-  <div id="catch-click"
-       style="position:absolute; inset:0; z-index:9999; cursor:pointer;">
-  </div>
-</div>
-
-<script>
-document.getElementById("catch-click").onclick = function () {
-  const url = "https://your-direct-landing.com";
-
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.openLink(url, { try_browser: false });
-  } else {
-    window.location.href = url;
-  }
-};
-</script>
-    
         
     <script type="module">
         import React, { useState, useEffect, useRef } from 'react';
